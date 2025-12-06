@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Vintage.ci — Boutique vintage</title>
+<meta name="description" content="Vintage.ci — Le style d'hier, la tendance d'aujourd'hui. Boutique vintage en ligne." />
+
+<!-- Favicon / simple SVG logo -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><rect width='100%' height='100%' fill='%23000000'/><text x='50%' y='55%' font-size='34' fill='%23d4af37' font-family='Arial' text-anchor='middle' alignment-baseline='middle'>V</text></svg>">
+
+<style>
+  /* ====== Reset + base ====== */
+  :root{
+    --bg:#0b0b0b;
+    --card:#0f0f0f;
+    --muted:#c9bda4; /* beige */
+    --accent:#d4af37; /* gold */
+    --text:#ffffff;
+    --glass: rgba(255,255,255,0.03);
+    --container-padding: 16px;
+    --max-width: 1100px;
+    --currency: "XOF";
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: linear-gradient(180deg,var(--bg), #060606);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    padding-bottom:60px;
+  }
+
+  /* ====== Header ====== */
+  .topbar{
+    position:sticky; top:0; z-index:40;
+    backdrop-filter: blur(6px);
+    background: linear-gradient(180deg, rgba(11,11,11,0.85), rgba(11,11,11,0.6));
+    border-bottom:1px solid rgba(255,255,255,0.03);
+  }
+  .container{max-width:var(--max-width); margin:0 auto; padding:12px var(--container-padding); display:flex; gap:12px; align-items:center; justify-content:space-between}
+  .brand{display:flex;gap:10px;align-items:center}
+  .logo{
+    width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--card),#1b1b1b);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.02)
+  }
+  .logo span{font-weight:700;font-size:20px;color:var(--accent)}
+  .brand h1{font-size:16px;margin:0}
+  .brand p{margin:0;font-size:12px;color:var(--muted)}
+
+  /* search + cart */
+  .actions{display:flex;gap:8px;align-items:center}
+  .search{
+    display:flex;align-items:center;background:var(--glass);border-radius:999px;padding:8px 12px;gap:8px;border:1px solid rgba(255,255,255,0.03);
+    min-width:120px;
+  }
+  .search input{background:transparent;border:0;outline:none;color:var(--text);font-size:14px}
+  .btn{
+    background:linear-gradient(180deg,var(--accent), #b8860b );
+    color:#000;padding:8px 12px;border-radius:10px;border:0;font-weight:600;
+    box-shadow: 0 6px 18px rgba(212,175,55,0.12);
+  }
+  .icon{
+    width:38px;height:38px;background:var(--glass);border-radius:10px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.03)
+  }
+
+  /* ====== Main layout ====== */
+  main{max-width:var(--max-width);margin:18px auto;padding:0 var(--container-padding) 80px}
+  .hero{
+    display:flex;flex-direction:column;gap:12px;padding:18px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.02)
+  }
+  .hero h2{margin:0;font-size:20px}
+  .hero p{margin:0;color:var(--muted)}
+
+  .filters{display:flex;gap:8px;overflow:auto;padding-top:8px}
+  .chip{padding:8px 12px;border-radius:999px;background:transparent;border:1px solid rgba(255,255,255,0.03);font-size:13px;color:var(--muted)}
+  .chip.active{background:linear-gradient(90deg, rgba(212,175,55,0.12), rgba(212,175,55,0.06));color:var(--text);border:1px solid rgba(212,175,55,0.2)}
+
+  /* product grid */
+  .grid{display:grid;grid-template-columns: repeat(2,1fr); gap:12px;margin-top:14px}
+  @media(min-width:720px){ .grid{grid-template-columns: repeat(3,1fr)} }
+  .card{background:var(--card);border-radius:12px;padding:10px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:8px}
+  .thumb{width:100%;height:160px;border-radius:10px;overflow:hidden;display:block}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .meta{display:flex;justify-content:space-between;align-items:center}
+  .meta h3{margin:0;font-size:15px}
+  .price{font-weight:700;color:var(--accent)}
+
+  .desc{font-size:13px;color:var(--muted);min-height:36px}
+
+  .card .actions{justify-content:space-between;margin-top:auto}
+
+  /* cart drawer */
+  .cart-drawer{
+    position:fixed;right:14px;bottom:14px;z-index:60;
+    width:74px;height:74px;border-radius:18px;background:linear-gradient(180deg,var(--card),#111);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+  }
+  .cart-count{position:absolute;right:6px;top:6px;background:var(--accent);color:#000;border-radius:999px;padding:3px 7px;font-size:12px;font-weight:700}
+
+  /* side cart modal */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:flex-end;z-index:70}
+  .cart-panel{width:100%;max-width:520px;background:linear-gradient(180deg,#080808,#0f0f0f);border-radius:14px 14px 0 0;padding:18px;border-top:4px solid var(--accent)}
+  .cart-panel h3{margin:0 0 8px 0}
+  .cart-list{display:flex;flex-direction:column;gap:12px;max-height:55vh;overflow:auto;padding-right:6px}
+  .cart-item{display:flex;gap:10px;align-items:center}
+  .cart-item img{width:64px;height:64px;border-radius:8px;object-fit:cover}
+  .qty{display:flex;gap:6px;align-items:center}
+  .qty button{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:4px 8px;border-radius:8px;color:var(--muted)}
+
+  .cart-footer{display:flex;flex-direction:column;gap:8px;padding-top:12px}
+  .checkout-btn{width:100%;padding:12px;border-radius:10px;border:0;font-weight:700;background:linear-gradient(180deg,var(--accent),#b8860b)}
+
+  /* product modal */
+  .product-modal{position:fixed;inset:10% 6%;background:var(--card);border-radius:12px;padding:12px;z-index:80;display:none;flex-direction:column;gap:10px;max-width:680px;margin:auto;box-shadow:0 30px 80px rgba(0,0,0,0.6)}
+  .pm-top{display:flex;gap:12px}
+  .pm-top img{width:46%;height:200px;object-fit:cover;border-radius:10px}
+  .pm-info{flex:1;display:flex;flex-direction:column;gap:8px}
+
+  /* checkout form */
+  .checkout-form{display:flex;flex-direction:column;gap:8px}
+  .field{display:flex;flex-direction:column;gap:6px}
+  label{font-size:13px;color:var(--muted)}
+  input,textarea,select{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text);outline:none}
+  textarea{min-height:80px;resize:vertical}
+  .order-summary{background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);color:var(--muted)}
+
+  /* small helpers */
+  .muted{color:var(--muted)}
+  .center{display:flex;align-items:center;justify-content:center}
+  .hidden{display:none}
+  footer{max-width:var(--max-width);margin:18px auto;padding:12px var(--container-padding);color:var(--muted);font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="container">
+    <div class="brand">
+      <div class="logo"><span>V</span></div>
+      <div>
+        <h1>Vintage.ci</h1>
+        <p>Le style d'hier, la tendance d'aujourd'hui</p>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="search" role="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="opacity:0.8"><path d="M21 21l-4.35-4.35" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <input id="searchInput" placeholder="Rechercher..." />
+      </div>
+
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="viewCartBtn" class="icon" aria-label="Panier">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6h15l-1.6 8.7a2 2 0 0 1-2 1.6H9.2" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <h2>Bienvenue sur <strong>Vintage.ci</strong></h2>
+    <p class="muted">Collections uniques de vêtements & accessoires vintage — Expédition Côte d'Ivoire (XOF).</p>
+
+    <div class="filters" id="filters">
+      <!-- chips inserted by JS -->
+    </div>
+  </section>
+
+  <section class="grid" id="productGrid" aria-live="polite">
+    <!-- produits insérés en JS -->
+  </section>
+</main>
+
+<!-- Floating Cart Button -->
+<button id="cartFab" class="cart-drawer" aria-label="Ouvrir le panier">
+  <div>
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M3 3h2l.4 2M7 13h10l3-8H6.4" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div id="cartCount" class="cart-count hidden">0</div>
+  </div>
+</button>
+
+<!-- Cart overlay / panel -->
+<div id="overlay" class="overlay" role="dialog" aria-hidden="true">
+  <div class="cart-panel" role="document">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3>Mon Panier</h3>
+      <button id="closeCart" class="icon" aria-label="Fermer panier">✕</button>
+    </div>
+    <div class="cart-list" id="cartList">
+      <!-- items -->
+    </div>
+
+    <div class="cart-footer">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="muted">Total</div>
+        <div id="cartTotal" style="font-weight:800;color:var(--accent)">0 XOF</div>
+      </div>
+      <button id="checkoutBtn" class="checkout-btn">Passer à la commande</button>
+    </div>
+  </div>
+</div>
+
+<!-- Product modal -->
+<div id="productModal" class="product-modal" role="dialog" aria-hidden="true">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h3 id="pmTitle">Produit</h3>
+    <button id="closePm" class="icon">✕</button>
+  </div>
+  <div class="pm-top">
+    <img id="pmImg" src="" alt="">
+    <div class="pm-info">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div id="pmCategory" class="muted" style="font-size:13px"></div>
+          <h3 id="pmName" style="margin:6px 0 0 0"></h3>
+        </div>
+        <div style="text-align:right">
+          <div id="pmPrice" class="price"></div>
+        </div>
+      </div>
+      <p id="pmDesc" class="muted"></p>
+      <div style="display:flex;gap:8px;margin-top:auto;align-items:center">
+        <input id="pmQty" type="number" min="1" value="1" style="width:72px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--text)">
+        <button id="pmAdd" class="btn">Ajouter au panier</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Checkout modal (reuses overlay) -->
+<div id="checkoutModal" class="product-modal hidden" aria-hidden="true" style="max-width:720px;bottom:0;top:6%;">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h3>Commande</h3>
+    <button id="closeCheckout" class="icon">✕</button>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr;gap:12px">
+    <div class="checkout-form">
+      <div class="field">
+        <label>Nom complet</label>
+        <input id="custName" placeholder="Ex: Kouakou Jean" />
+      </div>
+      <div class="field">
+        <label>Téléphone</label>
+        <input id="custPhone" placeholder="Ex: 225 07 xx xx xx" />
+      </div>
+      <div class="field">
+        <label>Adresse de livraison</label>
+        <textarea id="custAddress" placeholder="Rue, quartier, ville"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Méthode de livraison</label>
+        <select id="deliveryMethod">
+          <option value="pickup">Retrait (Abidjan)</option>
+          <option value="delivery">Livraison (Côte d'Ivoire)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Méthode de paiement</label>
+        <select id="paymentMethod">
+          <option value="cod">Paiement à la livraison</option>
+          <option value="mobile">Mobile Money</option>
+        </select>
+      </div>
+
+      <div class="order-summary" id="orderSummary">
+        <!-- récapitulatif -->
+      </div>
+
+      <button id="placeOrder" class="checkout-btn">Confirmer la commande</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  © <strong>Vintage.ci</strong> — Designed for mobile. Paiements: Mobile Money & Paiement à la livraison.
+</footer>
+
+<script>
+/* ====== Données produits (modifie ici) ======
+ Chaque produit: { id, name, category, price (XOF), desc, image }
+*/
+const PRODUCTS = [
+  { id: "p1", name: "Veste Cuir Vintage", category: "Vêtements", price: 45000, desc: "Veste en cuir véritable, coupe rétro, excellente condition.", image: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=60" },
+  { id: "p2", name: "Chemise Rétro à Fleurs", category: "Vêtements", price: 12000, desc: "Chemise à motifs, taille M, tissu léger.", image: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=1000&q=60" },
+  { id: "p3", name: "Montre Classique", category: "Accessoires", price: 35000, desc: "Montre mécanique restaurée, bracelet en cuir.", image: "https://images.unsplash.com/photo-1519741491631-2b8f8c8b44b2?auto=format&fit=crop&w=800&q=60" },
+  { id: "p4", name: "Chaussures Retro", category: "Chaussures", price: 28000, desc: "Chaussures taille 42 - semelle neuve.", image: "https://images.unsplash.com/photo-1528701800489-476a6b3b0f9f?auto=format&fit=crop&w=800&q=60" },
+  { id: "p5", name: "Sacoin Vintage", category: "Accessoires", price: 17000, desc: "Sac à main en cuir, poches intérieures.", image: "https://images.unsplash.com/photo-1520975924786-6f0b8a6d7aaf?auto=format&fit=crop&w=800&q=60" },
+  { id: "p6", name: "Lunettes Rétro", category: "Accessoires", price: 8000, desc: "Monture ronde, verres teintés.", image: "https://images.unsplash.com/photo-1520975924786-6f0b8a6d7aaf?auto=format&fit=crop&w=1000&q=60" }
+];
+
+const CATEGORIES = ["Tous", ...Array.from(new Set(PRODUCTS.map(p=>p.category)))];
+
+const productGrid = document.getElementById('productGrid');
+const filtersEl = document.getElementById('filters');
+const searchInput = document.getElementById('searchInput');
+
+let activeCategory = 'Tous';
+let searchTerm = '';
+
+/* ========== Render filters ========== */
+function renderFilters(){
+  filtersEl.innerHTML = '';
+  CATEGORIES.forEach(cat=>{
+    const btn = document.createElement('button');
+    btn.className = 'chip' + (cat===activeCategory ? ' active':'');
+    btn.textContent = cat;
+    btn.onclick = ()=> { activeCategory = cat; renderFilters(); renderProducts(); }
+    filtersEl.appendChild(btn);
+  });
+}
+renderFilters();
+
+/* ========== Render products ========== */
+function renderProducts(){
+  const term = searchTerm.trim().toLowerCase();
+  productGrid.innerHTML = '';
+  const filtered = PRODUCTS.filter(p=>{
+    const inCat = activeCategory==='Tous' || p.category===activeCategory;
+    const inSearch = !term || p.name.toLowerCase().includes(term) || p.desc.toLowerCase().includes(term);
+    return inCat && inSearch;
+  });
+
+  if(filtered.length===0){
+    productGrid.innerHTML = `<div style="padding:18px;color:var(--muted)">Aucun produit trouvé.</div>`;
+    return;
+  }
+
+  filtered.forEach(p=>{
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.innerHTML = `
+      <a class="thumb" data-id="${p.id}" role="button" tabindex="0">
+        <img src="${p.image}" alt="${p.name}">
+      </a>
+      <div class="meta">
+        <h3>${p.name}</h3>
+        <div class="price">${p.price.toLocaleString('fr-FR')} XOF</div>
+      </div>
+      <p class="desc">${p.desc}</p>
+      <div class="actions">
+        <button class="chip" data-add="${p.id}">Ajouter</button>
+        <button class="chip" data-view="${p.id}">Voir</button>
+      </div>
+    `;
+    productGrid.appendChild(card);
+  });
+}
+renderProducts();
+
+/* ===== Search ===== */
+searchInput.addEventListener('input', (e)=>{
+  searchTerm = e.target.value;
+  renderProducts();
+});
+
+/* ===== Product modal ===== */
+const pm = document.getElementById('productModal');
+const pmImg = document.getElementById('pmImg');
+const pmName = document.getElementById('pmName');
+const pmDesc = document.getElementById('pmDesc');
+const pmPrice = document.getElementById('pmPrice');
+const pmCategory = document.getElementById('pmCategory');
+const pmQty = document.getElementById('pmQty');
+const pmAdd = document.getElementById('pmAdd');
+const pmTitle = document.getElementById('pmTitle');
+const closePm = document.getElementById('closePm');
+
+productGrid.addEventListener('click', (e)=>{
+  const addId = e.target.closest('[data-add]')?.getAttribute('data-add');
+  const viewId = e.target.closest('[data-view]')?.getAttribute('data-view');
+  const thumbId = e.target.closest('.thumb')?.getAttribute('data-id');
+
+  if(addId) { addToCart(addId,1); return; }
+  if(viewId) { openProductModal(viewId); return; }
+  if(thumbId) { openProductModal(thumbId); return; }
+});
+
+function openProductModal(id){
+  const p = PRODUCTS.find(x=>x.id===id);
+  if(!p) return;
+  pmImg.src = p.image;
+  pmName.textContent = p.name;
+  pmDesc.textContent = p.desc;
+  pmPrice.textContent = p.price.toLocaleString('fr-FR') + ' XOF';
+  pmCategory.textContent = p.category;
+  pmQty.value = 1;
+  pmTitle.textContent = p.name;
+  pm.dataset.id = p.id;
+  pm.style.display = 'flex';
+  pm.setAttribute('aria-hidden','false');
+}
+closePm.addEventListener('click', ()=>{ pm.style.display='none'; pm.setAttribute('aria-hidden','true'); });
+
+pmAdd.addEventListener('click', ()=>{
+  const id = pm.dataset.id;
+  const qty = Math.max(1, parseInt(pmQty.value||1));
+  addToCart(id, qty);
+  pm.style.display='none';
+  pm.setAttribute('aria-hidden','true');
+});
+
+/* ===== Cart logic ===== */
+const CART_KEY = 'vintageci_cart_v1';
+let cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+
+const cartFab = document.getElementById('cartFab');
+const cartCountEl = document.getElementById('cartCount');
+const overlay = document.getElementById('overlay');
+const cartList = document.getElementById('cartList');
+const cartTotalEl = document.getElementById('cartTotal');
+const viewCartBtn = document.getElementById('viewCartBtn');
+const closeCart = document.getElementById('closeCart');
+
+function saveCart(){ localStorage.setItem(CART_KEY, JSON.stringify(cart)); renderCart(); }
+function addToCart(id, qty=1){
+  const existing = cart.find(i=>i.id===id);
+  if(existing) existing.qty += qty;
+  else cart.push({ id, qty });
+  saveCart();
+  showToast("Produit ajouté au panier");
+}
+function removeFromCart(id){ cart = cart.filter(i=>i.id!==id); saveCart(); }
+function setQty(id, qty){ cart = cart.map(i=> i.id===id ? {...i, qty: Math.max(1, qty)} : i ); saveCart(); }
+
+function renderCart(){
+  const total = cart.reduce((s,i)=>{
+    const p = PRODUCTS.find(x=>x.id===i.id);
+    return s + (p ? p.price * i.qty : 0);
+  }, 0);
+  cartTotalEl.textContent = total.toLocaleString('fr-FR') + ' XOF';
+  const count = cart.reduce((s,i)=>s+i.qty,0);
+  if(count>0){ cartCountEl.classList.remove('hidden'); cartCountEl.textContent = count; } else { cartCountEl.classList.add('hidden') }
+
+  cartList.innerHTML = '';
+  if(cart.length===0){
+    cartList.innerHTML = `<div class="muted">Votre panier est vide.</div>`;
+    return;
+  }
+  cart.forEach(item=>{
+    const p = PRODUCTS.find(x=>x.id===item.id);
+    const el = document.createElement('div'); el.className='cart-item';
+    el.innerHTML = `
+      <img src="${p.image}" alt="${p.name}">
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong style="font-size:14px">${p.name}</strong><div class="muted" style="font-size:13px">${p.price.toLocaleString('fr-FR')} XOF</div></div>
+          <div style="text-align:right">
+            <div style="font-weight:700;color:var(--accent)">${(p.price * item.qty).toLocaleString('fr-FR')} XOF</div>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+          <div class="qty">
+            <button data-dec="${item.id}">-</button>
+            <div style="padding:4px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.03)">${item.qty}</div>
+            <button data-inc="${item.id}">+</button>
+          </div>
+          <button data-remove="${item.id}" class="chip">Supprimer</button>
+        </div>
+      </div>
+    `;
+    cartList.appendChild(el);
+  });
+}
+renderCart();
+
+/* cart interactions */
+cartList.addEventListener('click', (e)=>{
+  const inc = e.target.closest('[data-inc]')?.getAttribute('data-inc');
+  const dec = e.target.closest('[data-dec]')?.getAttribute('data-dec');
+  const rem = e.target.closest('[data-remove]')?.getAttribute('data-remove');
+  if(inc) { const it = cart.find(i=>i.id===inc); if(it){ setQty(inc, it.qty+1);} }
+  if(dec) { const it = cart.find(i=>i.id===dec); if(it){ setQty(dec, Math.max(1, it.qty-1));} }
+  if(rem) { removeFromCart(rem); }
+});
+
+/* open/close cart */
+function openCart(){ overlay.style.display='flex'; overlay.setAttribute('aria-hidden','false'); renderCart(); }
+function closeCartPanel(){ overlay.style.display='none'; overlay.setAttribute('aria-hidden','true'); }
+
+cartFab.addEventListener('click', openCart);
+viewCartBtn.addEventListener('click', openCart);
+closeCart.addEventListener('click', closeCartPanel);
+overlay.addEventListener('click', (e)=>{ if(e.target === overlay) closeCartPanel(); });
+
+/* checkout flow */
+const checkoutBtn = document.getElementById('checkoutBtn');
+const checkoutModal = document.getElementById('checkoutModal');
+const closeCheckout = document.getElementById('closeCheckout');
+const placeOrder = document.getElementById('placeOrder');
+const orderSummary = document.getElementById('orderSummary');
+
+checkoutBtn.addEventListener('click', ()=> {
+  if(cart.length===0){ showToast("Votre panier est vide."); return; }
+  // populate summary
+  updateOrderSummary();
+  checkoutModal.classList.remove('hidden');
+  checkoutModal.style.display='flex';
+});
+
+closeCheckout.addEventListener('click', ()=> { checkoutModal.classList.add('hidden'); checkoutModal.style.display='none'; });
+
+function updateOrderSummary(){
+  const list = cart.map(i=>{
+    const p = PRODUCTS.find(x=>x.id===i.id);
+    return `<div style="display:flex;justify-content:space-between"><div>${p.name} × ${i.qty}</div><div>${(p.price*i.qty).toLocaleString('fr-FR')} XOF</div></div>`;
+  }).join('');
+  const total = cart.reduce((s,i)=> s + (PRODUCTS.find(p=>p.id===i.id).price * i.qty), 0);
+  orderSummary.innerHTML = `<div style="font-weight:700;margin-bottom:8px">Résumé</div>${list}<hr style="opacity:0.06;margin:8px 0"><div style="display:flex;justify-content:space-between;font-weight:800;color:var(--accent)"><div>Total</div><div>${total.toLocaleString('fr-FR')} XOF</div></div>`;
+}
+
+/* Place order (mock) */
+placeOrder.addEventListener('click', ()=>{
+  // validate fields
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  const address = document.getElementById('custAddress').value.trim();
+  const delivery = document.getElementById('deliveryMethod').value;
+  const payment = document.getElementById('paymentMethod').value;
+  if(!name || !phone || !address){ showToast("Remplis ton nom, téléphone et adresse."); return; }
+  // create order object
+  const order = {
+    id: 'ORD' + Date.now(),
+    customer: { name, phone, address },
+    delivery, payment,
+    items: cart.map(i=> ({ ...i, product: PRODUCTS.find(p=>p.id===i.id) })),
+    total: cart.reduce((s,i)=> s + (PRODUCTS.find(p=>p.id===i.id).price * i.qty), 0),
+    createdAt: new Date().toISOString()
+  };
+  // For now: store to localStorage 'orders' list and clear cart
+  const orders = JSON.parse(localStorage.getItem('vintageci_orders_v1') || '[]');
+  orders.push(order);
+  localStorage.setItem('vintageci_orders_v1', JSON.stringify(orders));
+
+  // confirmation
+  cart = []; saveCart();
+  checkoutModal.classList.add('hidden'); checkoutModal.style.display='none';
+  closeCartPanel();
+  showToast("Commande confirmée — Réf : " + order.id);
+  // show a printable summary popup
+  setTimeout(()=> {
+    const summary = `Réf: ${order.id}\nNom: ${order.customer.name}\nTél: ${order.customer.phone}\nAdresse: ${order.customer.address}\nTotal: ${order.total.toLocaleString('fr-FR')} XOF\n\nMerci pour votre commande !`;
+    alert(summary);
+  }, 250);
+});
+
+/* simple toast */
+function showToast(msg){
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.position='fixed';
+  t.style.left='50%';
+  t.style.transform='translateX(-50%)';
+  t.style.bottom='86px';
+  t.style.padding='10px 16px';
+  t.style.background='linear-gradient(180deg,var(--accent),#b8860b)';
+  t.style.color='#000';
+  t.style.fontWeight='700';
+  t.style.borderRadius='10px';
+  t.style.zIndex=120;
+  document.body.appendChild(t);
+  setTimeout(()=> t.style.opacity='0',2000);
+  setTimeout(()=> t.remove(),2600);
+}
+
+/* keyboard accessibility: close modals on ESC */
+document.addEventListener('keydown',(e)=>{
+  if(e.key === 'Escape'){ pm.style.display='none'; overlay.style.display='none'; checkoutModal.classList.add('hidden'); checkoutModal.style.display='none'; }
+});
+
+/* initial render */
+renderProducts();
+renderCart();
+</script>
+
+</body>
+</html>
